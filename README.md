@@ -11,7 +11,7 @@ Then, the suitable trend type should be selected by clicking on either "Additive
 If seasonality is present in the data then Seasonality should be swithced to "Seasonal Component" otherwise 
 left as "No Seasonal Compenent".
 If "Seasonal Component" is chosen then the seasonality period should be determined by entering it to cell C-13.
-The seasonal indexes can then be entered to column C.
+The seasonal indexes can then be entered to column C. The seasonal indexes must be computed according to multiplicative decompostion model.
 
 If the user wants to label some part of the data as outsample, then the number of out-sample observations should 
 be entered to cell C-15.
