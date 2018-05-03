@@ -1,9 +1,9 @@
 ATA {ATAforecasting}	R Documentation
-Forecasting Time Series by ATA Method with Box-Cox transformation
+    Forecasting Time Series by ATA Method with Box-Cox transformation
 
 Description
 
-Returns ATA(p,q,phi) applied to X. Based on the modified simple exponential smoothing as described in Yapar, G. (2016). ATA method is a new univariate time series forecasting method which provides innovative solutions to issues faced during the initialization and optimization stages of existing methods. ATA's forecasting performance is superior to existing methods both in terms of easy implementation and accurate forecasting. It can be applied to non-seasonal or deseasonalized time series, where the deseasonalization can be performed via any preferred decomposition method. This methodology performed extremely well on the M3 and M4-competition data.
+    Returns ATA(p,q,phi) applied to X. Based on the modified simple exponential smoothing as described in Yapar, G. (2016). ATA method is a new univariate time series forecasting method which provides innovative solutions to issues faced during the initialization and optimization stages of existing methods. ATA's forecasting performance is superior to existing methods both in terms of easy implementation and accurate forecasting. It can be applied to non-seasonal or deseasonalized time series, where the deseasonalization can be performed via any preferred decomposition method. This methodology performed extremely well on the M3 and M4-competition data.
 
 Usage
 
@@ -14,167 +14,114 @@ ATA(X, Y = NULL, parP = NULL, parQ = NULL, parPHI = NULL,
   trend.fixed = FALSE, partition.h = NULL, transform.method = NULL,
   lambda = NULL, initial.value = NULL, start.phi = NULL, end.phi = NULL,
   size.phi = NULL, plot.out = TRUE)
+  
 Arguments
 
-X	
-a numeric vector or time series of class ts or msts for in-sample.
-Y	
-a numeric vector or time series of class ts or msts for out-sample. If you do not have out-sample data, you can split in-sample data into training and test dataset with partition.h argument.
-parP	
-Value of Level parameter p. If NULL or "opt", it is estimated. p has all integer values from 1 to length(X).
-parQ	
-Value of Trend parameter q. If NULL or "opt", it is estimated. q has all integer values from 0 to p.
-parPHI	
-Value of Damping Trend parameter phi. If NULL or "opt", it is estimated. phi has all values from 0 to 1.
-model.type	
-A one-character string identifying method using the framework terminology. The letter "A" for additive model, the letter "M" for multiplicative model. If NULL, both letters will be tried and the best model (according to the accuracy measure accuracy.type) returned.
-seasonal.test	
-Testing for stationary and seasonality. If TRUE, the method firstly uses test="adf", Augmented Dickey-Fuller, unit-root test then the test returns the least number of differences required to pass the test at level alpha. After the unit-root test, seasonal test applies on the stationary X.
-seasonal.model	
-A string identifying method for seasonal decomposition. If NULL, "decomp" method is default. c("none", "decomp", "stl", "stlplus", "tbats", "stR") phrases of methods denote
-none : seasonal decomposition is not required.
-decomp : classical seasonal decomposition. If decomp, the stats package will be used.
-stl : seasonal-trend decomposition procedure based on loess developed by Cleveland et al. (1990). If stl, the stats package will be used.
-stlplus : seasonal-trend decomposition procedure based on loess developed by Cleveland et al. (1990). If stlplus, the stlplus package will be used.
-tbats : exponential smoothing state space model with box-cox transformation, ARMA errors, trend and seasonal components as described in De Livera, Hyndman & Snyder (2011). Parallel processing is used by default to speed up the computations. If tbats, the forecast package will be used.
-stR : seasonal-trend decomposition procedure based on regression developed by Dokumentov and Hyndman (2015). If stR, the stR package will be used.
-x13 : seasonal-trend decomposition procedure based on X13ARIMA/SEATS. If x13, the seasonal package will be used.
-x11 : seasonal-trend decomposition procedure based on X11. If x11, the seasonal package will be used.
-seasonal.period	
-Value(s) of seasonal periodicity. If NULL, frequency of X is default If seasonal.period is not integer, X must be msts time series object. c(s1,s2,s3,...) for multiple period. If X has multiple periodicity, "tbats" or "stR" seasonal model have to be selected.
-seasonal.type	
-A one-character string identifying method for the seasonal component framework. If NULL, "M" is default. The letter "A" for additive model, the letter "M" for multiplicative model. If other seasonal decomposition method except decomp with "M", Box-Cox transformation with lambda=0 is selected.
-seasonal.test.attr	
-Attributes set for unit root, seasonality tests, X13ARIMA/SEATS and X11. If NULL, s.tcrit=1.645, uroot.test="adf", uroot.alpha=0.05, uroot.maxd=2, x13.estimate.maxiter=1500, x13.estimate.tol=1.0e-5, x11.estimate.maxiter=1500, x11.estimate.tol=1.0e-5. If you want to change, please use ata.seasonal.attr function and its output. For example, you can use seasonal.test.attr = ata.seasonal.attr(s.tcrit=1.96) equation in ATA function.
-find.period	
-Find seasonal period(s) automatically. If NULL, 0 is default. When find.period,
-0 : none
-1 : single period with find.freq
-2 : single period with forecast::findfrequency
-3 : multiple period with find.freq & stR
-4 : multiple period with find.freq & tbats
-accuracy.type	
-Accuracy measure for selection of the best model. IF NULL, sMAPE is default.
-MAE : mean absolute error.
-MSE : mean square error.
-RMSE : root mean squared error.
-MPE : mean percentage error.
-MAPE : mean absolute percentage error.
-sMAPE : symmetric mean absolute percentage error.
-MASE : mean absolute scaled error.
-MdAE : median absolute error.
-MdSE : median square error.
-MdPE : median percentage error.
-MdAPE : median absolute percentage error.
-sMdAPE : symmetric median absolute percentage error.
-level.fixed	
-"pStarQ" –> First, fits ATA(p,0) where p = p* is optimized for q=0. Then, fits ATA(p*,q) where q is optimized for p = p*.
-trend.fixed	
-"pBullet" –> Fits ATA(p,1) where p = p* is optimized for q = 1.
-partition.h	
-If Y is NULL, this parameter divides X into two parts: training set (in-sample) and test set (out-sample). partition.h is number of periods for forecasting and size of test set. When the parameter is NULL; if the frequency of X is 4 the parameter is set to 8; if the frequency of X is 12 the parameter is set to 18; the parameter is set to 6 for other cases.
-transform.method	
-Transformation method –> BoxCox, sqrt, inverse, log, log10. When BoxCox or log or log10 is specified, model.type and seasonal.type is set to "A".
-lambda	
-Box-Cox transformation parameter. If NULL, data transformed before model is estimated. When lambda is specified, model.type and seasonal.type is set to "A".
-initial.value	
-If NULL, FALSE is default. If FALSE, ATA Method calculates the pth observation in X for level and qth observation in X(T)-X(T-1) for trend. If TRUE, ATA Method calculates average of first p value in Xfor level and average of first q value in X(T)-X(T-1) for trend.
-start.phi	
-Lower boundary for searching parPHI.If NULL, 0 is default.
-end.phi	
-Upper boundary for searching parPHI. If NULL, 1 is is default.
-size.phi	
-Increment step for searching parPHI. If NULL, 0.05 is default.
-plot.out	
-Default is TRUE. If FALSE, graphics of ATA Method are not shown.
-print.out	
-Default is TRUE. If FALSE, summary of ATA Method is not shown.
+X	-- a numeric vector or time series of class ts or msts for in-sample.
+Y	-- a numeric vector or time series of class ts or msts for out-sample. If you do not have out-sample data, you can split in-sample data into training and test dataset with partition.h argument.
+parP -- Value of Level parameter p. If NULL or "opt", it is estimated. p has all integer values from 1 to length(X).
+parQ -- Value of Trend parameter q. If NULL or "opt", it is estimated. q has all integer values from 0 to p.
+parPHI -- Value of Damping Trend parameter phi. If NULL or "opt", it is estimated. phi has all values from 0 to 1.
+model.type -- A one-character string identifying method using the framework terminology. The letter "A" for additive model, the letter "M" for multiplicative model. If NULL, both letters will be tried and the best model (according to the accuracy measure accuracy.type) returned.
+seasonal.test -- Testing for stationary and seasonality. If TRUE, the method firstly uses test="adf", Augmented Dickey-Fuller, unit-root test then the test returns the least number of differences required to pass the test at level alpha. After the unit-root test, seasonal test applies on the stationary X.
+seasonal.model -- A string identifying method for seasonal decomposition. If NULL, "decomp" method is default. c("none", "decomp", "stl", "stlplus", "tbats", "stR") phrases of methods denote
+    none : seasonal decomposition is not required.
+    decomp : classical seasonal decomposition. If decomp, the stats package will be used.
+    stl : seasonal-trend decomposition procedure based on loess developed by Cleveland et al. (1990). If stl, the stats package will be used.
+    stlplus : seasonal-trend decomposition procedure based on loess developed by Cleveland et al. (1990). If stlplus, the stlplus package will be used.
+    tbats : exponential smoothing state space model with box-cox transformation, ARMA errors, trend and seasonal components as described in De Livera, Hyndman & Snyder (2011). Parallel processing is used by default to speed up the computations. If tbats, the forecast package will be used.
+    stR : seasonal-trend decomposition procedure based on regression developed by Dokumentov and Hyndman (2015). If stR, the stR package will be used.
+    x13 : seasonal-trend decomposition procedure based on X13ARIMA/SEATS. If x13, the seasonal package will be used.
+    x11 : seasonal-trend decomposition procedure based on X11. If x11, the seasonal package will be used.
+seasonal.period	 -- Value(s) of seasonal periodicity. If NULL, frequency of X is default If seasonal.period is not integer, X must be msts time series object. c(s1,s2,s3,...) for multiple period. If X has multiple periodicity, "tbats" or "stR" seasonal model have to be selected.
+seasonal.type	-- A one-character string identifying method for the seasonal component framework. If NULL, "M" is default. The letter "A" for additive model, the letter "M" for multiplicative model. If other seasonal decomposition method except decomp with "M", Box-Cox transformation with lambda=0 is selected.
+seasonal.test.attr -- Attributes set for unit root, seasonality tests, X13ARIMA/SEATS and X11. If NULL, s.tcrit=1.645, uroot.test="adf", uroot.alpha=0.05, uroot.maxd=2, x13.estimate.maxiter=1500, x13.estimate.tol=1.0e-5, x11.estimate.maxiter=1500, x11.estimate.tol=1.0e-5. If you want to change, please use ata.seasonal.attr function and its output. For example, you can use seasonal.test.attr = ata.seasonal.attr(s.tcrit=1.96) equation in ATA function.
+find.period	-- Find seasonal period(s) automatically. If NULL, 0 is default. When find.period,
+    0 : none
+    1 : single period with find.freq
+    2 : single period with forecast::findfrequency
+    3 : multiple period with find.freq & stR
+    4 : multiple period with find.freq & tbats
+accuracy.type	-- Accuracy measure for selection of the best model. IF NULL, sMAPE is default.
+    MAE : mean absolute error.
+    MSE : mean square error.
+    RMSE : root mean squared error.
+    MPE : mean percentage error.
+    MAPE : mean absolute percentage error.
+    sMAPE : symmetric mean absolute percentage error.
+    MASE : mean absolute scaled error.
+    MdAE : median absolute error.
+    MdSE : median square error.
+    MdPE : median percentage error.
+    MdAPE : median absolute percentage error.
+    sMdAPE : symmetric median absolute percentage error.
+level.fixed	-- "pStarQ" –> First, fits ATA(p,0) where p = p* is optimized for q=0. Then, fits ATA(p*,q) where q is optimized for p = p*.
+trend.fixed	-- "pBullet" –> Fits ATA(p,1) where p = p* is optimized for q = 1.
+partition.h	-- If Y is NULL, this parameter divides X into two parts: training set (in-sample) and test set (out-sample). partition.h is number of periods for forecasting and size of test set. When the parameter is NULL; if the frequency of X is 4 the parameter is set to 8; if the frequency of X is 12 the parameter is set to 18; the parameter is set to 6 for other cases.
+transform.method -- Transformation method –> BoxCox, sqrt, inverse, log, log10. When BoxCox or log or log10 is specified, model.type and seasonal.type is set to "A".
+lambda -- Box-Cox transformation parameter. If NULL, data transformed before model is estimated. When lambda is specified, model.type and seasonal.type is set to "A".
+initial.value -- If NULL, FALSE is default. If FALSE, ATA Method calculates the pth observation in X for level and qth observation in X(T)-X(T-1) for trend. If TRUE, ATA Method calculates average of first p value in Xfor level and average of first q value in X(T)-X(T-1) for trend.
+start.phi	-- Lower boundary for searching parPHI.If NULL, 0 is default.
+end.phi	-- Upper boundary for searching parPHI. If NULL, 1 is is default.
+size.phi -- Increment step for searching parPHI. If NULL, 0.05 is default.
+plot.out -- Default is TRUE. If FALSE, graphics of ATA Method are not shown.
+print.out -- Default is TRUE. If FALSE, summary of ATA Method is not shown.
 ...	
 Other undocumented arguments.
-actual	
-The original time series.
-fitted	
-Fitted values (one-step forecasts). The mean is of the fitted values is calculated over the ensemble.
-level	
-Estimated level values.
-trend	
-Estimated trend values.
-residuals	
-Original values minus fitted values.
-coefp	
-The weights attached to level observations.
-coefq	
-The weights attached to trend observations.
-p	
-Optimum level parameter.
-q	
-Optimum trend parameter.
-phi	
-Optimum damped trend parameter.
-model.type	
-Form of trend.
-h	
-The number of steps to forecast ahead.
-forecast	
-Point forecasts as a time series.
-out.sample	
-Test values as a time series.
-method	
-The name of the optimum forecasting method as a character string.
-initial.value	
-Selected initial values for the time series forecasting method.
-level.fixed	
-A choice of optional level fixed trended methods.
-trend.fixed	
-A choice of optional trend fixed trended methods.
-transform.method	
-Transformation method –> BoxCox, sqrt, inverse, log, log10.
-lambda	
-Box-Cox transformation parameter.
-accuracy.type	
-Accuracy measure that is chosen for model selection.
-accuracy	
-In and out sample accuracy measures and its descriptives that are calculated for optimum model are given.
-is.season	
-Indicates whether it contains seasonal pattern.
-seasonal.model	
-The name of the selected decomposition method.
-seasonal.type	
-Form of seasonality.
-seasonal.period	
-The number of seasonality periods (which defaults to frequency(X)).
-seasonal.index	
-Weights of seasonality.
-seasonal	
-Estimated seasonal values.
-seasonal.adjusted	
-Deseasonalized time series values.
-execution.time	
-The real and CPU time (in seconds) spent by the system executing that task, including the time spent executing run-time or system services on its behalf.
-calculation.time	
-How much real time (in seconds) the currently running R process has already taken.
+actual -- The original time series.
+fitted -- Fitted values (one-step forecasts). The mean is of the fitted values is calculated over the ensemble.
+level -- Estimated level values.
+trend -- Estimated trend values.
+residuals -- Original values minus fitted values.
+coefp -- The weights attached to level observations.
+coefq -- The weights attached to trend observations.
+p -- Optimum level parameter.
+q -- Optimum trend parameter.
+phi -- Optimum damped trend parameter.
+model.type -- Form of trend.
+h -- The number of steps to forecast ahead.
+forecast -- Point forecasts as a time series.
+out.sample -- Test values as a time series.
+method	-- The name of the optimum forecasting method as a character string.
+initial.value -- Selected initial values for the time series forecasting method.
+level.fixed -- A choice of optional level fixed trended methods.
+trend.fixed -- A choice of optional trend fixed trended methods.
+transform.method -- Transformation method –> BoxCox, sqrt, inverse, log, log10.
+lambda -- Box-Cox transformation parameter.
+accuracy.type -- Accuracy measure that is chosen for model selection.
+accuracy -- In and out sample accuracy measures and its descriptives that are calculated for optimum model are given.
+is.season -- Indicates whether it contains seasonal pattern.
+seasonal.model -- The name of the selected decomposition method.
+seasonal.type -- Form of seasonality.
+seasonal.period -- The number of seasonality periods (which defaults to frequency(X)).
+seasonal.index -- Weights of seasonality.
+seasonal -- Estimated seasonal values.
+seasonal.adjusted -- Deseasonalized time series values.
+execution.time -- The real and CPU time (in seconds) spent by the system executing that task, including the time spent executing run-time or system services on its behalf.
+calculation.time -- How much real time (in seconds) the currently running R process has already taken.
 The generic accessor functions ATA.Forecast and ata.accuracy extract useful features of the value returned by ata and associated functions.
+
 Value
 
-Returns an object of class "ata", containing.
+    Returns an object of class "ata", containing.
 
 Author(s)
 
-Ali Sabri Taylan and Hanife Taylan Selamlar
+    Ali Sabri Taylan and Hanife Taylan Selamlar
 
 References
 
-Yapar, G., (2016) "Modified simple exponential smoothing" Hacettepe University Journal of Mathematics and Statistics Early Access. Doi:10.15672/HJMS.201614320580
+    Yapar, G., (2016) "Modified simple exponential smoothing" Hacettepe University Journal of Mathematics and Statistics Early Access. Doi:10.15672/HJMS.201614320580
 
-Yapar, G., Capar, S., Selamlar, H. T., Yavuz, I., (2016) "Modified holt's linear trend method" Hacettepe University Journal of Mathematics and Statistics Early Access. Doi: 10.15672/HJMS.2017.493
+    Yapar, G., Capar, S., Selamlar, H. T., Yavuz, I., (2016) "Modified holt's linear trend method" Hacettepe University Journal of Mathematics and Statistics Early Access. Doi: 10.15672/HJMS.2017.493
 
 See Also
 
-forecast, stlplus, stR, stl, decompose, tbats, seasadj, seasonal.
+    forecast, stlplus, stR, stl, decompose, tbats, seasadj, seasonal.
 
 Examples
 
-fit <- ATA(M3[[1899]]$x,M3[[1899]]$xx)
-plot(ATA.Forecast(fit,h=36))
+    fit <- ATA(M3[[1899]]$x,M3[[1899]]$xx)
+    plot(ATA.Forecast(fit,h=36))
 
 [Package ATAforecasting version 0.0.12 Index]
